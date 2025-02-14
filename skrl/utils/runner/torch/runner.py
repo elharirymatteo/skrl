@@ -116,6 +116,10 @@ class Runner:
         elif name in ["ppo", "ppo_default_config"]:
             from skrl.agents.torch.ppo import PPO, PPO_DEFAULT_CONFIG
 
+            component = DQN_DEFAULT_CONFIG if "default_config" in name else PPO_CAT
+        elif name in ["ppo-cat", "ppo_default_config"]:
+            from skrl.agents.torch.ppo import PPO_CAT, PPO_CAT_DEFAULT_CONFIG
+
             component = PPO_DEFAULT_CONFIG if "default_config" in name else PPO
         elif name in ["rpo", "rpo_default_config"]:
             from skrl.agents.torch.rpo import RPO, RPO_DEFAULT_CONFIG
@@ -407,7 +411,7 @@ class Runner:
                 "reply_buffer": reply_buffer,
                 "collect_reference_motions": lambda num_samples: env.collect_reference_motions(num_samples),
             }
-        elif agent_class in ["a2c", "cem", "ddpg", "ddqn", "dqn", "ppo", "rpo", "sac", "td3", "trpo"]:
+        elif agent_class in ["a2c", "cem", "ddpg", "ddqn", "dqn", "ppo", "ppo-cat", "rpo", "sac", "td3", "trpo"]: # CaT: added "ppo-cat"
             agent_id = possible_agents[0]
             agent_cfg = self._component(f"{agent_class}_DEFAULT_CONFIG").copy()
             agent_cfg.update(self._process_cfg(cfg["agent"]))
