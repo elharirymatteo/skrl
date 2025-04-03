@@ -101,7 +101,7 @@ class PPO_CAT(Agent):
 
         :raises KeyError: If the models dictionary is missing a required key
         """
-        _cfg = copy.deepcopy(PPO_DEFAULT_CONFIG)
+        _cfg = copy.deepcopy(PPO_CAT_DEFAULT_CONFIG)
         _cfg.update(cfg if cfg is not None else {})
         super().__init__(
             models=models,
@@ -416,12 +416,14 @@ class PPO_CAT(Agent):
         values = self.memory.get_tensor_by_name("values")
         returns, advantages = compute_gae(
             rewards=self.memory.get_tensor_by_name("rewards"),
-            dones=self.memory.get_tensor_by_name("terminated") | self.memory.get_tensor_by_name("truncated"),
+            # dones=self.memory.get_tensor_by_name("terminated") | self.memory.get_tensor_by_name("truncated"),
+            dones = torch.maximum(self.memory.get_tensor_by_name("terminated"), self.memory.get_tensor_by_name("truncated").to(torch.float32)), # <---- CaT
             values=values,
             next_values=last_values,
             discount_factor=self._discount_factor,
             lambda_coefficient=self._lambda,
         )
+        # print(f"Computed returns: {returns.mean():.4f}, advantages: {advantages.mean():.4f}")
 
         self.memory.set_tensor_by_name("values", self._value_preprocessor(values, train=True))
         self.memory.set_tensor_by_name("returns", self._value_preprocessor(returns, train=True))
