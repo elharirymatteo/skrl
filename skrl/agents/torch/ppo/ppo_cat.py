@@ -111,7 +111,7 @@ class PPO_CAT(Agent):
             device=device,
             cfg=_cfg,
         )
-
+        print(f"Using PPO_CAT agent!")
         # models
         self.policy = self.models.get("policy", None)
         self.value = self.models.get("value", None)
